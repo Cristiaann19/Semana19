@@ -1,0 +1,81 @@
+package com.example.em.Service;
+
+import com.example.em.Config.JwtUtil;
+import com.example.em.DTO.AuthRequest;
+import com.example.em.DTO.AuthResponse;
+import com.example.em.Model.Rol;
+import com.example.em.Model.Usuario;
+import com.example.em.Repository.UsuarioRepository;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+
+@Service
+public class AuthService implements UserDetailsService {
+
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
+
+    public AuthService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder,
+                       JwtUtil jwtUtil, @Lazy AuthenticationManager authenticationManager) {
+        this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
+        this.authenticationManager = authenticationManager;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+
+        return new User(
+                usuario.getUsername(),
+                usuario.getPassword(),
+                usuario.isActivo(),
+                true, true, true,
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + usuario.getRol().name()))
+        );
+    }
+
+    public AuthResponse login(AuthRequest request) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+
+        Usuario usuario = usuarioRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + request.getUsername()));
+
+        String token = jwtUtil.generateToken(loadUserByUsername(request.getUsername()));
+
+        return new AuthResponse(token, usuario.getUsername(), usuario.getRol().name());
+    }
+
+    public AuthResponse register(String username, String password, String rol) {
+        if (usuarioRepository.existsByUsername(username)) {
+            throw new RuntimeException("Ya existe un usuario con el username: " + username);
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setUsername(username);
+        usuario.setPassword(passwordEncoder.encode(password));
+        usuario.setRol(Rol.valueOf(rol));
+        usuario.setActivo(true);
+
+        Usuario saved = usuarioRepository.save(usuario);
+
+        String token = jwtUtil.generateToken(loadUserByUsername(saved.getUsername()));
+
+        return new AuthResponse(token, saved.getUsername(), saved.getRol().name());
+    }
+}
