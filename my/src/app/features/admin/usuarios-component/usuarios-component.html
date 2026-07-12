@@ -1,0 +1,253 @@
+<div class="p-1">
+  <!-- HEADER -->
+  <div class="bg-white rounded-3xl shadow-sm border border-blue-100/50 p-8 mb-6">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-5">
+      <div>
+        <h3 class="text-[32px] font-extrabold leading-[1.1] text-[#329791] mb-[6px]">
+          Usuarios
+        </h3>
+        <p class="text-gray-600 text-sm">Gesti&oacute;n de cuentas de usuario del sistema</p>
+      </div>
+      <button pButton (click)="abrirNuevo()" class="h-[48px] px-5 rounded-xl bg-[#329791] hover:bg-[#267c77] border-none text-white font-bold text-sm cursor-pointer flex items-center gap-2">
+        <i class="pi pi-plus"></i>
+        Nuevo Usuario
+      </button>
+    </div>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="bg-white rounded-3xl shadow-sm border border-blue-100/50 p-6 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <p-iconfield>
+          <p-inputicon styleClass="pi pi-search" />
+          <input pInputText type="text" [(ngModel)]="terminoBusqueda" (ngModelChange)="aplicarFiltros()" placeholder="Buscar por username, rol o ID..."
+                 class="w-full pl-11 pr-4 h-12 rounded-xl border-2 border-gray-200 focus:border-[#329791] focus:ring-4 focus:ring-[#329791]/10 transition-all outline-none text-sm bg-white" />
+        </p-iconfield>
+      </div>
+      <div class="flex items-end justify-end">
+        <button (click)="limpiarFiltros()"
+                class="px-4 py-2 text-sm font-semibold text-[#329791] hover:bg-[#329791]/10 rounded-lg transition-all cursor-pointer border-none bg-transparent">
+          <i class="pi pi-filter-slash mr-2"></i>
+          Limpiar filtros
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ERROR -->
+  @if (error) {
+    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-6">
+      <p class="text-red-700 text-sm">{{ error }}</p>
+    </div>
+  }
+
+  <!-- TABLA -->
+  <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <p-table
+      #dt
+      [value]="usuariosFiltrados"
+      [paginator]="true"
+      [rows]="10"
+      [rowsPerPageOptions]="[5, 10, 20, 50]"
+      [customSort]="true"
+      (onSort)="customSort($event)"
+      dataKey="id">
+
+      <ng-template pTemplate="header">
+        <tr class="bg-[#e4f1f1]/20 border-b border-[#e4f1f1]/10">
+          <th pSortableColumn="id" class="text-left px-6 py-4 text-xs font-black uppercase tracking-wider text-[#329791]">
+            <div class="flex items-center gap-2">
+              ID
+              <p-sortIcon field="id" />
+            </div>
+          </th>
+          <th pSortableColumn="username" class="text-left px-6 py-4 text-xs font-black uppercase tracking-wider text-[#329791]">
+            <div class="flex items-center gap-2">
+              Username
+              <p-sortIcon field="username" />
+            </div>
+          </th>
+          <th pSortableColumn="rol" class="text-left px-6 py-4 text-xs font-black uppercase tracking-wider text-[#329791]">
+            <div class="flex items-center gap-2">
+              Rol
+              <p-sortIcon field="rol" />
+            </div>
+          </th>
+          <th pSortableColumn="activo" class="text-center px-6 py-4 text-xs font-black uppercase tracking-wider text-[#329791]">
+            <div class="flex items-center justify-center gap-2">
+              Estado
+              <p-sortIcon field="activo" />
+            </div>
+          </th>
+          <th class="text-center px-6 py-4 text-xs font-black uppercase tracking-wider text-[#329791]">
+            Acciones
+          </th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-u>
+        <tr class="border-b border-gray-100 hover:bg-[#329791]/[0.03] transition-all">
+          <td class="px-6 py-5">
+            <span class="font-semibold text-gray-800 text-sm">{{ u.id }}</span>
+          </td>
+          <td class="px-6 py-5">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
+                   [class]="u.activo ? 'bg-[#eaf4f4] text-[#329791]' : 'bg-gray-200 text-gray-400'">
+                {{ u.username.charAt(0).toUpperCase() }}
+              </div>
+              <span class="font-semibold text-gray-800 text-sm">{{ u.username }}</span>
+            </div>
+          </td>
+          <td class="px-6 py-5">
+            <span class="inline-block px-3 py-1.5 rounded-full text-xs font-bold"
+                  [class]="u.rol === 'ADMIN' ? 'bg-purple-100 text-purple-700' : 'bg-green-100 text-green-700'">
+              {{ u.rol }}
+            </span>
+          </td>
+          <td class="px-6 py-5 text-center">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold"
+                  [class]="u.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+              <span class="w-1.5 h-1.5 rounded-full" [class]="u.activo ? 'bg-green-600' : 'bg-red-600'"></span>
+              {{ u.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td class="px-6 py-5">
+            <div class="flex items-center justify-center gap-2">
+              <button (click)="abrirEditar(u)"
+                      class="w-9 h-9 rounded-lg bg-[#eaf4f4] hover:bg-[#d4e8e8] text-[#329791] flex items-center justify-center cursor-pointer transition-all border-none"
+                      title="Editar usuario">
+                <i class="pi pi-pencil text-sm"></i>
+              </button>
+              <button (click)="confirmarCambiarEstado(u)"
+                      class="w-9 h-9 rounded-lg flex items-center justify-center cursor-pointer transition-all border-none"
+                      [class]="u.activo ? 'bg-orange-100 hover:bg-orange-200 text-orange-700' : 'bg-green-100 hover:bg-green-200 text-green-700'"
+                      [title]="u.activo ? 'Desactivar usuario' : 'Activar usuario'">
+                <i class="pi text-sm" [class]="u.activo ? 'pi-pause-circle' : 'pi-play-circle'"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" class="text-center align-middle py-20 text-gray-400">
+            <i class="pi pi-users text-6xl mb-4 block"></i>
+            <p class="font-semibold text-lg">No se encontraron usuarios</p>
+            <p class="text-sm mt-2">Intenta ajustar los filtros o registra un nuevo usuario</p>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<!-- MODAL: NUEVO / EDITAR -->
+<p-dialog
+  [header]="editingId ? 'Editar Usuario' : 'Nuevo Usuario'"
+  [(visible)]="showModal"
+  [modal]="true"
+  [style]="{ width: '500px' }"
+  [draggable]="false"
+  [resizable]="false">
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" autocomplete="off">
+    <div class="space-y-5 mt-4">
+      <div>
+        <label class="text-xs font-semibold text-gray-600 block mb-2">Username <span class="text-red-500">*</span></label>
+        <input pInputText type="text" formControlName="username" placeholder="Nombre de usuario"
+               class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 outline-none transition-all focus:border-[#329791] text-sm" />
+      </div>
+
+      <div>
+        <label class="text-xs font-semibold text-gray-600 block mb-2">
+          {{ editingId ? 'Nueva contrase&ntilde;a (dejar vac&iacute;o para no cambiar)' : 'Contrase&ntilde;a' }}
+          @if (!editingId) { <span class="text-red-500">*</span> }
+        </label>
+        <input pInputText type="password" formControlName="password" placeholder="M&iacute;nimo 6 caracteres"
+               class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 outline-none transition-all focus:border-[#329791] text-sm" />
+      </div>
+
+      <div>
+        <label class="text-xs font-semibold text-gray-600 block mb-2">Rol <span class="text-red-500">*</span></label>
+        <p-select formControlName="rol" [options]="roles" placeholder="Seleccione un rol"
+                   styleClass="w-full" [style]="{ width: '100%', height: '48px' }" appendTo="body">
+        </p-select>
+      </div>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-3 pt-4">
+      <button (click)="closeModal()" pButton
+              class="px-5 py-2.5 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold border-none cursor-pointer">
+        Cancelar
+      </button>
+      <button (click)="guardar()" pButton
+              [disabled]="form.invalid || loading"
+              class="px-5 py-2.5 rounded-xl bg-[#329791] hover:bg-[#267c77] text-white font-bold border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+        <i class="pi pi-save mr-2"></i>
+        {{ editingId ? 'Actualizar' : 'Guardar' }}
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- MODAL: CONFIRMAR CAMBIAR ESTADO -->
+<p-dialog
+  [header]="usuarioCambiandoEstado?.activo ? 'Desactivar Usuario' : 'Activar Usuario'"
+  [(visible)]="mostrarConfirmarEstado"
+  [modal]="true"
+  [style]="{ width: '450px' }"
+  [draggable]="false"
+  [resizable]="false">
+
+  @if (usuarioCambiandoEstado; as u) {
+    <div class="py-4">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
+             [class]="u.activo ? 'bg-orange-100' : 'bg-green-100'">
+          <i class="text-xl" [class]="u.activo ? 'pi pi-pause-circle text-orange-600' : 'pi pi-play-circle text-green-600'"></i>
+        </div>
+        <div>
+          <h4 class="font-bold text-gray-800">{{ u.activo ? 'Desactivar usuario' : 'Activar usuario' }}</h4>
+          <p class="text-sm text-gray-500">{{ u.activo ? 'El usuario no podr&aacute; acceder al sistema' : 'El usuario podr&aacute; acceder al sistema nuevamente' }}</p>
+        </div>
+      </div>
+      <div class="bg-gray-50 rounded-xl p-4 space-y-2 text-sm">
+        <div class="flex justify-between">
+          <span class="text-gray-600">Usuario:</span>
+          <span class="font-semibold text-gray-800">{{ u.username }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Rol:</span>
+          <span class="font-semibold text-gray-800">{{ u.rol }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Estado actual:</span>
+          <span class="inline-block px-2 py-0.5 rounded-full text-xs font-bold"
+                [class]="u.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+            {{ u.activo ? 'Activo' : 'Inactivo' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-3">
+      <button (click)="closeConfirmDialog()" pButton
+              class="px-5 py-2.5 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold border-none cursor-pointer">
+        Cancelar
+      </button>
+      <button (click)="toggleEstado()" pButton
+              class="px-5 py-2.5 rounded-xl text-white font-bold border-none cursor-pointer"
+              [class]="usuarioCambiandoEstado?.activo ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-600 hover:bg-green-700'">
+        <i class="pi mr-2" [class]="usuarioCambiandoEstado?.activo ? 'pi-pause-circle' : 'pi-play-circle'"></i>
+        {{ usuarioCambiandoEstado?.activo ? 'Desactivar' : 'Activar' }}
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>

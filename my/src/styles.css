@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+@import "primeicons/primeicons.css";
+@import "tailwindcss";
+
+@theme {
+  /* Fuentes */
+  --font-sans: "Plus Jakarta Sans", "Outfit", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", sans-serif;
+
+  /* Colores personalizados */
+  --color-aquamarine: #7fffd4;
+  --color-ocean-light: #e0f2f1;
+  --color-ocean-soft: #b2ebf2;
+  --color-ocean-deep: #00bcd4;
+  --color-turquesa: #53d1e2;
+
+  /* Colores de la paleta Teal / Navy */
+  --color-teal: #36b1ae;
+  --color-teal-dark: #0f8b86;
+  --color-teal-light: #e0f9f8;
+  --color-teal-mid: #2d9694;
+  --color-navy: #083d3a;
+  --color-navy-mid: #0d5450;
+  --color-bg: #f0f9f9;
+  --color-muted: #4d6d6b;
+  --color-subtle: #b2d4d2;
+  --color-border: #c8e8e6;
+
+  /* Colores de estado y notificaciones */
+  --color-red-bg: #fcebeb;
+  --color-red-text: #a32d2d;
+  --color-amber-bg: #faeeda;
+  --color-amber-text: #ba7517;
+  --color-green-bg: #eaf3de;
+  --color-green-text: #3b6d11;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+}
+
+::-webkit-scrollbar-track {
+  background: #8d8d8d;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.mso {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.nav-active-link {
+  background-color: #2563eb !important;
+  color: white !important;
+}
+
+.nav-active-link:hover {
+  background-color: #1d4ed8 !important;
+  color: white !important;
+}
