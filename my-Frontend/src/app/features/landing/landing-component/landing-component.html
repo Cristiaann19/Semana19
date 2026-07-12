@@ -1,0 +1,78 @@
+<div class="min-h-screen bg-[#f0f9f9] flex flex-col">
+  <header class="h-16 bg-navy flex items-center px-6 justify-between flex-shrink-0">
+    <div class="flex items-center gap-3">
+      <div>
+        <img src="Minecraft-creeper-face.jpg" alt="creeper" class="w-10 h-10 object-contain">
+      </div>
+      <span class="text-white font-semibold text-[15px] tracking-tight">People</span>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <div class="text-right">
+        <div class="text-[13px] font-medium text-white/90">{{ nombreCompleto() }}</div>
+        <div class="text-[11px] text-teal">{{ rol() }}</div>
+      </div>
+      <div class="w-[34px] h-[34px] rounded-full bg-teal text-white flex items-center justify-center text-[13px] font-semibold">
+        {{ inicial() }}
+      </div>
+      <button (click)="logout()"
+              class="ml-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[13px] font-semibold border-none cursor-pointer transition-all flex items-center gap-2">
+        <span class="material-symbols-outlined text-[17px]">logout</span>
+        Cerrar sesión
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-1 flex items-center justify-center p-8">
+    <div class="max-w-lg w-full">
+      <div class="bg-white rounded-3xl shadow-sm border border-teal-light/50 p-10 text-center">
+        <div class="w-20 h-20 rounded-full bg-teal-light flex items-center justify-center mx-auto mb-6">
+          <img src="Minecraft-creeper-face.jpg" alt="creeper" class="w-10 h-10 object-contain">
+        </div>
+
+        <h1 class="text-[26px] font-extrabold text-navy mb-2">
+          Bienvenido, {{ nombreCompleto() }}
+        </h1>
+        <p class="text-muted text-sm mb-8">
+          Has iniciado sesión correctamente como usuario del sistema.
+        </p>
+
+        <div class="bg-bg rounded-2xl p-5 mb-8 text-left space-y-3">
+          <div class="flex justify-between items-center py-1">
+            <span class="text-muted text-sm">Usuario</span>
+            <span class="font-semibold text-navy text-sm">{{ nombre() }}</span>
+          </div>
+          <div class="h-px bg-teal-light/50"></div>
+          <div class="flex justify-between items-center py-1">
+            <span class="text-muted text-sm">Nombre completo</span>
+            <span class="font-semibold text-navy text-sm">{{ nombreCompleto() }}</span>
+          </div>
+          <div class="h-px bg-teal-light/50"></div>
+          <div class="flex justify-between items-center py-1">
+            <span class="text-muted text-sm">Rol</span>
+            <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
+              {{ rol() }}
+            </span>
+          </div>
+        </div>
+
+        <div class="bg-amber-bg/50 rounded-2xl p-5 border border-amber-bg">
+          <div class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-amber-text text-lg flex-shrink-0 mt-0.5">info</span>
+            <div class="text-left">
+              <p class="text-[13px] font-semibold text-amber-text mb-1">Acceso limitado</p>
+              <p class="text-[12px] text-amber-text/80">
+                Tu cuenta no tiene permisos de administración.
+                Contacta a un administrador si necesitas acceso adicional.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-4 text-center border-t border-teal-light/30">
+    <small class="text-muted/60 text-xs">&copy; 2026 People &mdash; Gesti&oacute;n de trabajadores</small>
+  </footer>
+</div>

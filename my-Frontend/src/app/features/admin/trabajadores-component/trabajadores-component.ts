@@ -12,7 +12,7 @@ import { TagModule } from 'primeng/tag';
 import { CheckboxModule } from 'primeng/checkbox';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { SortEvent } from 'primeng/api';
+import { SortEvent, MessageService } from 'primeng/api';
 import { TrabajadorService, Trabajador, TrabajadorRequest } from '../../../core/services/trabajador.service';
 
 @Component({
@@ -51,7 +51,6 @@ export class TrabajadoresComponent implements OnInit {
   mostrarConfirmarEstado = false;
   empleadoCambiandoEstado: Trabajador | null = null;
   loading = false;
-  error = '';
 
   form: FormGroup;
 
@@ -69,6 +68,7 @@ export class TrabajadoresComponent implements OnInit {
     private trabajadorService: TrabajadorService,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
+    private messageService: MessageService,
   ) {
     this.form = this.fb.group({
       nombre: ['', [Validators.required, Validators.maxLength(50)]],
@@ -100,7 +100,7 @@ export class TrabajadoresComponent implements OnInit {
         this.cdr.markForCheck();
       },
       error: () => {
-        this.error = 'Error al cargar trabajadores';
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar trabajadores' });
         this.cdr.markForCheck();
       },
     });
@@ -194,13 +194,11 @@ export class TrabajadoresComponent implements OnInit {
 
   closeModal(): void {
     this.showModal = false;
-    this.error = '';
   }
 
   guardar(): void {
     if (this.form.invalid) return;
     this.loading = true;
-    this.error = '';
     const fv = this.form.value;
     const req: TrabajadorRequest = {
       nombre: fv.nombre,
@@ -233,9 +231,18 @@ export class TrabajadoresComponent implements OnInit {
         this.loadTrabajadores();
         this.closeModal();
         this.loading = false;
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: this.editingId ? 'Empleado actualizado correctamente' : 'Empleado creado correctamente',
+        });
       },
       error: (err) => {
-        this.error = err.error?.message || 'Error al guardar';
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: err.error?.message || 'Error al guardar',
+        });
         this.loading = false;
         this.cdr.markForCheck();
       },
@@ -261,9 +268,14 @@ export class TrabajadoresComponent implements OnInit {
         this.loadTrabajadores();
         this.mostrarConfirmarEstado = false;
         this.empleadoCambiandoEstado = null;
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: t.activo ? 'Empleado desactivado correctamente' : 'Empleado activado correctamente',
+        });
       },
       error: () => {
-        this.error = 'Error al cambiar estado';
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cambiar estado' });
         this.cdr.markForCheck();
       },
     });

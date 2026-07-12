@@ -4,13 +4,13 @@
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-5">
       <div>
         <h3 class="text-[32px] font-extrabold leading-[1.1] text-[#329791] mb-[6px]">
-          Empleados
+          Trabajadores
         </h3>
         <p class="text-gray-600 text-sm">Gesti&oacute;n de empleados y cuentas de usuario</p>
       </div>
       <button pButton (click)="abrirNuevo()" class="h-[48px] px-5 rounded-xl bg-[#329791] hover:bg-[#267c77] border-none text-white font-bold text-sm cursor-pointer flex items-center gap-2">
         <i class="pi pi-plus"></i>
-        Nuevo Empleado
+        Nuevo Trabajador
       </button>
     </div>
   </div>
@@ -34,13 +34,6 @@
       </div>
     </div>
   </div>
-
-  <!-- ERROR -->
-  @if (error) {
-    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-6">
-      <p class="text-red-700 text-sm">{{ error }}</p>
-    </div>
-  }
 
   <!-- TABLA -->
   <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
@@ -167,7 +160,7 @@
 
 <!-- MODAL: NUEVO / EDITAR -->
 <p-dialog
-  [header]="editingId ? 'Editar Empleado' : 'Nuevo Empleado'"
+  [header]="editingId ? 'Editar Trabajador' : 'Nuevo Trabajador'"
   [(visible)]="showModal"
   [modal]="true"
   [style]="{ width: '650px' }"

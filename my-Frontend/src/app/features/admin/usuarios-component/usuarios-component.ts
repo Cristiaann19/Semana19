@@ -9,7 +9,7 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { SortEvent } from 'primeng/api';
+import { SortEvent, MessageService } from 'primeng/api';
 import { UsuarioService, Usuario } from '../../../core/services/usuario.service';
 
 @Component({
@@ -46,7 +46,6 @@ export class UsuariosComponent implements OnInit {
   mostrarConfirmarEstado = false;
   usuarioCambiandoEstado: Usuario | null = null;
   loading = false;
-  error = '';
 
   form: FormGroup;
 
@@ -59,6 +58,7 @@ export class UsuariosComponent implements OnInit {
     private usuarioService: UsuarioService,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
+    private messageService: MessageService,
   ) {
     this.form = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(100)]],
@@ -79,7 +79,7 @@ export class UsuariosComponent implements OnInit {
         this.cdr.markForCheck();
       },
       error: () => {
-        this.error = 'Error al cargar usuarios';
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar usuarios' });
         this.cdr.markForCheck();
       },
     });
@@ -161,14 +161,12 @@ export class UsuariosComponent implements OnInit {
 
   closeModal(): void {
     this.showModal = false;
-    this.error = '';
   }
 
   guardar(): void {
     if (this.form.invalid) return;
 
     this.loading = true;
-    this.error = '';
     const { username, password, rol } = this.form.value;
 
     if (this.editingId) {
@@ -180,9 +178,10 @@ export class UsuariosComponent implements OnInit {
           this.loadUsuarios();
           this.closeModal();
           this.loading = false;
+          this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Usuario actualizado correctamente' });
         },
         error: (err) => {
-          this.error = err.error?.message || 'Error al actualizar';
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'Error al actualizar' });
           this.loading = false;
           this.cdr.markForCheck();
         },
@@ -193,9 +192,10 @@ export class UsuariosComponent implements OnInit {
           this.loadUsuarios();
           this.closeModal();
           this.loading = false;
+          this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Usuario creado correctamente' });
         },
         error: (err) => {
-          this.error = err.error?.message || 'Error al crear';
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'Error al crear' });
           this.loading = false;
           this.cdr.markForCheck();
         },
@@ -222,9 +222,14 @@ export class UsuariosComponent implements OnInit {
         this.loadUsuarios();
         this.mostrarConfirmarEstado = false;
         this.usuarioCambiandoEstado = null;
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: u.activo ? 'Usuario desactivado correctamente' : 'Usuario activado correctamente',
+        });
       },
       error: () => {
-        this.error = 'Error al cambiar estado';
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cambiar estado' });
         this.cdr.markForCheck();
       },
     });

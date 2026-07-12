@@ -13,6 +13,8 @@ export interface AuthResponse {
   token: string;
   username: string;
   rol: string;
+  nombres: string;
+  apellidoPaterno: string;
 }
 
 @Injectable({ providedIn: 'root' })

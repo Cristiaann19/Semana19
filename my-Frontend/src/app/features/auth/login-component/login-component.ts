@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -12,13 +13,13 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class LoginComponent {
   loginForm: FormGroup;
-  errorMessage = '';
   loading = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
+    private messageService: MessageService,
   ) {
     this.loginForm = this.fb.group({
       usuario: ['', [Validators.required, Validators.minLength(4)]],
@@ -30,17 +31,21 @@ export class LoginComponent {
     if (this.loginForm.invalid) return;
 
     this.loading = true;
-    this.errorMessage = '';
 
     const { usuario, clave } = this.loginForm.value;
 
     this.authService.login({ username: usuario, password: clave }).subscribe({
       next: () => {
-        this.router.navigate(['/admin']);
+        const destino = this.authService.isAdmin() ? '/admin' : '/landing';
+        this.router.navigate([destino]);
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage = err.error?.message || 'Credenciales incorrectas';
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: err.error?.message || 'Credenciales incorrectas',
+        });
       },
     });
   }

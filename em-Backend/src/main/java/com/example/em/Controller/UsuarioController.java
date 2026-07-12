@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,21 +24,25 @@ public class UsuarioController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UsuarioDTO>> findAll() {
         return ResponseEntity.ok(usuarioService.findAll());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UsuarioDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.findById(id));
     }
 
     @GetMapping("/username/{username}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UsuarioDTO> findByUsername(@PathVariable String username) {
         return ResponseEntity.ok(usuarioService.findByUsername(username));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UsuarioDTO> create(@Valid @RequestBody UsuarioCreateRequest request) {
         UsuarioDTO created = usuarioService.create(
                 request.getUsername(),
@@ -48,6 +53,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UsuarioDTO> update(@PathVariable Long id, @Valid @RequestBody UsuarioUpdateRequest request) {
         UsuarioDTO updated = usuarioService.update(
                 id,
@@ -60,6 +66,7 @@ public class UsuarioController {
     }
 
     @PatchMapping("/{id}/toggle-estado")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, String>> toggleEstado(@PathVariable Long id) {
         usuarioService.toggleEstado(id);
         return ResponseEntity.ok(Map.of("message", "Estado actualizado correctamente"));
