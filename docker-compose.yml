@@ -1,0 +1,18 @@
+services:               
+  backend:
+    build: ./em-Backend                       
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3306/em?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      JWT_SECRET: ${JWT_SECRET:-Y3Jpc3RpYW5KRXBlU2VjdXJlSldUS2V5MjAyNkBlbXBsb3llTWVuYWdlbWVudA==}
+
+  frontend:
+    build: ./my-Frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
