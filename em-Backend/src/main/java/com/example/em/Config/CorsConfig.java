@@ -7,7 +7,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 public class CorsConfig {
@@ -16,9 +15,9 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of("http://localhost:4200", "https://semana19.jacm.pro"));
+        config.setAllowedOriginPatterns(Arrays.asList("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
+        config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);
 
