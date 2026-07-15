@@ -1,4 +1,4 @@
-name: Build & Push Docker Images
+name: Build, Push & Deploy
 
 on:
   push:
@@ -14,7 +14,6 @@ jobs:
             context: ./em-Backend
           - service: frontend
             context: ./my-Frontend
-
     steps:
       - uses: actions/checkout@v4
 
@@ -30,7 +29,29 @@ jobs:
           context: ${{ matrix.context }}
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/sistemaempleados:${{ matrix.service }}latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/sistemaempleados:${{ matrix.service }}-${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/sistemaempleados:${{ matrix.service }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/sistemaempleados:${{ matrix.service }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Windows VPS
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          port: 22
+          username: ${{ secrets.VPS_USERNAME }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          command_timeout: 30m
+          script: |
+            Set-Location "C:\Projects\Semana19-DesarrolloWeb"
+            git fetch origin
+            git reset --hard origin/main
+            git clean -fd
+            docker compose down
+            docker compose up -d --build

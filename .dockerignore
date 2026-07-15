@@ -6,3 +6,4 @@ target
 .vscode
 *.md
 .angular
+.env

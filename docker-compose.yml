@@ -1,14 +1,33 @@
-services:               
+services:
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
-    build: ./em-Backend                       
+    build: ./em-Backend
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3306/em?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      JWT_SECRET: ${JWT_SECRET:-Y3Jpc3RpYW5KRXBlU2VjdXJlSldUS2V5MjAyNkBlbXBsb3llTWVuYWdlbWVudA==}
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+    depends_on:
+      mysql:
+        condition: service_healthy
 
   frontend:
     build: ./my-Frontend
@@ -16,3 +35,6 @@ services:
       - "4200:80"
     depends_on:
       - backend
+
+volumes:
+  mysql_data:
