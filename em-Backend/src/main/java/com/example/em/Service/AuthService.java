@@ -8,8 +8,6 @@ import com.example.em.Model.Trabajador;
 import com.example.em.Model.Usuario;
 import com.example.em.Repository.TrabajadorRepository;
 import com.example.em.Repository.UsuarioRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,8 +24,6 @@ import java.util.Collections;
 
 @Service
 public class AuthService implements UserDetailsService {
-
-    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
     private final UsuarioRepository usuarioRepository;
     private final TrabajadorRepository trabajadorRepository;
@@ -53,9 +49,14 @@ public class AuthService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        System.out.println("[AuthService] loadUserByUsername: " + username);
         Usuario usuario = usuarioRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+                .orElseThrow(() -> {
+                    System.err.println("[AuthService] Usuario NO encontrado: " + username);
+                    return new UsernameNotFoundException("Usuario no encontrado: " + username);
+                });
 
+        System.out.println("[AuthService] Usuario encontrado - activo: " + usuario.isActivo() + ", rol: " + usuario.getRol());
         return new User(
                 usuario.getUsername(),
                 usuario.getPassword(),
@@ -66,27 +67,28 @@ public class AuthService implements UserDetailsService {
     }
 
     public AuthResponse login(AuthRequest request) {
-        log.info("Login attempt for username: {}", request.getUsername());
+        System.out.println("[AuthService] >>> Login attempt for username: " + request.getUsername());
 
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-            log.info("Authentication successful for username: {}", request.getUsername());
+            System.out.println("[AuthService] >>> Authentication SUCCESSFUL for username: " + request.getUsername());
         } catch (AuthenticationException e) {
-            log.error("Authentication FAILED for username: {} - Cause: {}", request.getUsername(), e.getClass().getSimpleName() + ": " + e.getMessage());
+            System.err.println("[AuthService] >>> Authentication FAILED for username: " + request.getUsername());
+            System.err.println("[AuthService] >>> Cause: " + e.getClass().getSimpleName() + ": " + e.getMessage());
             throw e;
         }
 
         Usuario usuario = usuarioRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> {
-                    log.error("User not found in database after successful auth: {}", request.getUsername());
+                    System.err.println("[AuthService] User NOT found in DB after successful auth: " + request.getUsername());
                     return new UsernameNotFoundException("Usuario no encontrado: " + request.getUsername());
                 });
 
-        log.info("User found - id: {}, activo: {}, rol: {}", usuario.getId(), usuario.isActivo(), usuario.getRol());
+        System.out.println("[AuthService] User found - id: " + usuario.getId() + ", activo: " + usuario.isActivo() + ", rol: " + usuario.getRol());
 
         String token = jwtUtil.generateToken(loadUserByUsername(request.getUsername()));
-        log.info("JWT token generated for username: {}", request.getUsername());
+        System.out.println("[AuthService] JWT token generated for username: " + request.getUsername());
 
         String[] nombres = obtenerNombresPersona(usuario);
         return new AuthResponse(token, usuario.getUsername(), usuario.getRol().name(), nombres[0], nombres[1]);
