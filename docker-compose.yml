@@ -12,6 +12,8 @@ services:
       - JWT_EXPIRATION=${JWT_EXPIRATION}
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - semana19-net
 
   frontend:
     image: ${DOCKERHUB_USERNAME}/sistemaempleados:frontend-latest
@@ -19,3 +21,5 @@ services:
       - "0.0.0.0:4200:80"
     depends_on:
       - backend
+    networks:
+      - semana19-net
