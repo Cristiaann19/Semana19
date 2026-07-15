@@ -49,7 +49,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           command_timeout: 30m
           script: |
-            cd azureuser/semana19
+            cd azureuser/semana19/Semana19
             git fetch origin
             git reset --hard origin/main
             git clean -fd
