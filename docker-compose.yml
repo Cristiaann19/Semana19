@@ -1,6 +1,6 @@
 services:
   backend:
-    image: ${DOCKERHUB_USERNAME}/sistemaempleados:backend-latesst
+    image: ${DOCKERHUB_USERNAME}/sistemaempleados:backend-latest
     ports:
       - "8080:8080"
     environment:
