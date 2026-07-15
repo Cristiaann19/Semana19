@@ -49,7 +49,7 @@ jobs:
                   password: ${{ secrets.VPS_PASSWORD }}
                   command_timeout: 30m
                   script: |
-                      Set-Location "C:\Projects\Semana19-DesarrolloWeb"
+                      cd /d "C:\Projects\Semana19-DesarrolloWeb"
                       git fetch origin
                       git reset --hard origin/main
                       git clean -fd
