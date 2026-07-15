@@ -16,6 +16,6 @@ services:
   frontend:
     image: ${DOCKERHUB_USERNAME}/sistemaempleados:frontend-latest
     ports:
-      -"0.0.0.0:4200:80"
+      - "0.0.0.0:4200:80"
     depends_on:
       - backend
