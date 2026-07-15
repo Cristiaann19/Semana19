@@ -49,9 +49,9 @@ jobs:
                   password: ${{ secrets.VPS_PASSWORD }}
                   command_timeout: 30m
                   script: |
-                      cd /d "C:/Apps/proy-sem19/Semana19"
-                      git fetch origin
-                      git reset --hard origin/main
-                      git clean -fd
-                      docker compose down
+                      cd /d "C:/Apps/proy-sem19/Semana19" &&
+                      git fetch origin &&
+                      git reset --hard origin/main &&
+                      git clean -fd &&
+                      docker compose down &&
                       docker compose up -d --build
