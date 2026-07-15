@@ -23,3 +23,7 @@ services:
       - backend
     networks:
       - semana19-net
+      
+networks:
+  semana19-net:
+    driver: bridge
